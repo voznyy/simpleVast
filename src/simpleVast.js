@@ -2,7 +2,7 @@
 (function() {
   this.SimpleVast = (function() {
     function SimpleVast(options) {
-      var get, getNextTag, getTagData, name, tryCount, _self;
+      var adfoxParser, eventMap, get, getNextTag, getTagData, name, parseTag, tryCount, vastAdObj, _self;
       name = 'simple VAST';
       if (!options) {
         console.log("" + name + " options undefined!");
@@ -13,6 +13,15 @@
       }
       _self = this;
       tryCount = 0;
+      vastAdObj = {
+        adTitle: null,
+        impression: null,
+        videoUrl: '',
+        duration: null,
+        customViewTracker: null,
+        trackers: []
+      };
+      eventMap = ['firstQuartile', 'midpoint', 'thirdQuartile', 'complete', 'mute', 'unmute', 'rewind', 'pause', 'resume', 'fullscreen', 'creativeView', 'acceptInvitation', 'start', 'complete'];
       this.getAd = function(callback) {
         _self.completeCallback = callback;
         return getTagData();
@@ -22,12 +31,18 @@
         tag = getNextTag();
         if (tag) {
           if (options.dbg) {
-            console.log("" + name + ": try get tag №" + tryCount + " " + tag);
+            console.log("" + name + ": try get tag №" + tryCount + " " + tag.url);
           }
-          return get(tag, (function(_this) {
+          return get(tag.url, (function(_this) {
             return function(data) {
+              var parsedData;
               if (data) {
-                return _self.completeCallback(data);
+                parsedData = parseTag(tag, data);
+                if (parsedData) {
+                  return _self.completeCallback(data);
+                } else {
+                  return getTagData();
+                }
               } else {
                 return getTagData();
               }
@@ -36,6 +51,20 @@
         } else {
           return _self.completeCallback(null);
         }
+      };
+      parseTag = function(tag, node) {
+        var parser;
+        console.log("" + name + ": search parser for " + tag.provider);
+        switch (tag.provider.toLowerCase()) {
+          case 'adfox':
+            parser = adfoxParser;
+            break;
+          default:
+            if (options.dbg) {
+              console.log("" + name + ": unknown parser for " + tag.provider);
+            }
+        }
+        return parser(node);
       };
       getNextTag = function() {
         if (options.dbg) {
@@ -49,6 +78,43 @@
             console.log("" + name + ": no more tags");
           }
           return false;
+        }
+      };
+      adfoxParser = function(node) {
+        var error, event, tmpEventList, tracker, trackingEvents, _i, _j, _len, _len1;
+        if (options.dbg) {
+          console.log("" + name + ": try parse adfoxXML node");
+        }
+        try {
+          if (!node.querySelector('Ad')) {
+            if (options.dbg) {
+              console.log("" + name + ": VAST response is empty");
+            }
+            return false;
+          }
+          trackingEvents = node.querySelector('TrackingEvents');
+          vastAdObj.adTitle = node.querySelector('AdTitle').childNodes[0] ? node.querySelector('AdTitle').childNodes[0] : 'no title';
+          vastAdObj.impression = node.querySelector('Impression').childNodes[0].data;
+          vastAdObj.videoUrl = node.querySelector('MediaFile').childNodes[0].data;
+          vastAdObj.duration = node.querySelector('Duration').innerHTML;
+          vastAdObj.customViewTracker = node.querySelector('#secondaryAdServer') ? node.querySelector('#secondaryAdServer').childNodes[0].data : null;
+          for (_i = 0, _len = eventMap.length; _i < _len; _i++) {
+            tracker = eventMap[_i];
+            tmpEventList = trackingEvents.querySelectorAll("[event='" + tracker + "']");
+            for (_j = 0, _len1 = tmpEventList.length; _j < _len1; _j++) {
+              event = tmpEventList[_j];
+              if (!vastAdObj.trackers[tracker]) {
+                vastAdObj.trackers[tracker] = [];
+              }
+              vastAdObj.trackers[tracker].push(event.childNodes[0].data);
+            }
+          }
+          return vastAdObj;
+        } catch (_error) {
+          error = _error;
+          if (options.dbg) {
+            return console.log("" + name + ": parser crashed!");
+          }
         }
       };
       get = function(url, callback) {

@@ -10,10 +10,10 @@
 <script>
     var adv = new SimpleVast({
         dbg: true,
-        vastTags: [
-                'http://91.220.161.210/spublic/xml/adfoxSmart.xml',
-                'http://ads.adfox.ru/175105/getCode?p1=blujh&p2=emxn&pfc=a&pfb=a&plp=a&pli=a&pop=a&puid1=&puid2=&puid3=&puid22=&puid27=&puid51=&puid52='
-        ]
+        vastTags: [{
+            url: 'http://91.220.161.210/public/xml/adfoxSmart.xml',
+            provider: 'adfox'
+        }]
     });
 
     adv.getAd(function(data) {

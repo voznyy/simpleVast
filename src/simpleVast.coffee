@@ -43,7 +43,7 @@ class @SimpleVast
             parsedData = parseTag tag, data
 
             if parsedData
-              _self.completeCallback data
+              _self.completeCallback parsedData
             else getTagData()
 
           else
@@ -52,12 +52,13 @@ class @SimpleVast
         _self.completeCallback null
 
     parseTag = (tag, node) ->
-      console.log "#{name}: search parser for #{tag.provider}"
+      console.log "#{name}: search parser for #{tag.provider}" if options.dbg
       switch tag.provider.toLowerCase()
         when 'adfox' then parser = adfoxParser
         else console.log "#{name}: unknown parser for #{tag.provider}" if options.dbg
 
-      parser node
+      parsedObj = parser node
+      parsedObj
 
     getNextTag = ->
       console.log "............ \n#{name}: check if tag exists" if options.dbg

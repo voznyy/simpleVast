@@ -39,7 +39,7 @@
               if (data) {
                 parsedData = parseTag(tag, data);
                 if (parsedData) {
-                  return _self.completeCallback(data);
+                  return _self.completeCallback(parsedData);
                 } else {
                   return getTagData();
                 }
@@ -53,8 +53,10 @@
         }
       };
       parseTag = function(tag, node) {
-        var parser;
-        console.log("" + name + ": search parser for " + tag.provider);
+        var parsedObj, parser;
+        if (options.dbg) {
+          console.log("" + name + ": search parser for " + tag.provider);
+        }
         switch (tag.provider.toLowerCase()) {
           case 'adfox':
             parser = adfoxParser;
@@ -64,7 +66,8 @@
               console.log("" + name + ": unknown parser for " + tag.provider);
             }
         }
-        return parser(node);
+        parsedObj = parser(node);
+        return parsedObj;
       };
       getNextTag = function() {
         if (options.dbg) {

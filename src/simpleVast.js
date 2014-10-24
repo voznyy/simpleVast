@@ -2,7 +2,7 @@
 (function() {
   this.SimpleVast = (function() {
     function SimpleVast(options) {
-      var adfoxParser, dfpParser, eventMap, get, getNextTag, getTagData, name, openxParser, parseTag, tryCount, vastAdObj, _self;
+      var adfoxParser, dfpParser, eventMap, get, getNextTag, getTagData, name, openxParser, parseTag, resetVastObject, tryCount, vastAdObj, _self;
       name = 'simple VAST';
       if (!options) {
         console.log("" + name + " options undefined!");
@@ -24,6 +24,7 @@
       eventMap = ['firstQuartile', 'midpoint', 'thirdQuartile', 'complete', 'mute', 'unmute', 'rewind', 'pause', 'resume', 'fullscreen', 'creativeView', 'acceptInvitation', 'start', 'complete'];
       this.getAd = function(callback) {
         _self.completeCallback = callback;
+        resetVastObject();
         return getTagData();
       };
       getTagData = function() {
@@ -89,6 +90,16 @@
           return false;
         }
       };
+      resetVastObject = function() {
+        return vastAdObj = {
+          adTitle: null,
+          impression: null,
+          videoUrl: '',
+          duration: null,
+          customViewTracker: null,
+          trackers: []
+        };
+      };
       dfpParser = function(node) {
         var error, event, tmpEvent, tracker, trackingEvents, _i, _j, _len, _len1;
         if (options.dbg) {
@@ -102,10 +113,10 @@
             return false;
           }
           trackingEvents = node.querySelector('TrackingEvents');
-          vastAdObj.adTitle = node.querySelector('AdTitle').childNodes[0].data;
-          vastAdObj.impression = node.querySelector('Impression').childNodes[0].data;
-          vastAdObj.videoUrl = node.querySelector('MediaFiles>MediaFile').childNodes[0].data;
-          vastAdObj.duration = node.querySelector('Creative Duration').innerHTML;
+          vastAdObj.adTitle = node.querySelector('AdTitle').childNodes[0] ? node.querySelector('AdTitle').childNodes[0].data : null;
+          vastAdObj.impression = node.querySelector('Impression').childNodes[0] ? node.querySelector('Impression').childNodes[0].data : null;
+          vastAdObj.videoUrl = node.querySelector('MediaFiles>MediaFile').childNodes[0] ? node.querySelector('MediaFiles>MediaFile').childNodes[0].data : null;
+          vastAdObj.duration = node.querySelector('Creative Duration').innerHTML ? node.querySelector('Creative Duration').innerHTML : null;
           vastAdObj.customViewTracker = node.querySelector('#secondaryAdServer') ? node.querySelector('#secondaryAdServer').childNodes[0].data : null;
           for (_i = 0, _len = eventMap.length; _i < _len; _i++) {
             tracker = eventMap[_i];

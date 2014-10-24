@@ -29,6 +29,7 @@ class @SimpleVast
 #    ******************
     @getAd = (callback) ->
       _self.completeCallback = callback
+      resetVastObject()
       getTagData()
 
 
@@ -71,6 +72,15 @@ class @SimpleVast
         console.log "#{name}: no more tags" if options.dbg
         false
 
+    resetVastObject = ->
+      vastAdObj =
+        adTitle: null,
+        impression: null,
+        videoUrl: '',
+        duration: null,
+        customViewTracker: null,
+        trackers: []
+
 #      Parsers
 #    ******************
     dfpParser = (node) ->
@@ -83,10 +93,10 @@ class @SimpleVast
 
         trackingEvents = node.querySelector('TrackingEvents')
 
-        vastAdObj.adTitle = node.querySelector('AdTitle').childNodes[0].data
-        vastAdObj.impression = node.querySelector('Impression').childNodes[0].data
-        vastAdObj.videoUrl = node.querySelector('MediaFiles>MediaFile').childNodes[0].data
-        vastAdObj.duration = node.querySelector('Creative Duration').innerHTML
+        vastAdObj.adTitle = if node.querySelector('AdTitle').childNodes[0] then node.querySelector('AdTitle').childNodes[0].data else null
+        vastAdObj.impression = if node.querySelector('Impression').childNodes[0] then node.querySelector('Impression').childNodes[0].data else null
+        vastAdObj.videoUrl = if node.querySelector('MediaFiles>MediaFile').childNodes[0] then node.querySelector('MediaFiles>MediaFile').childNodes[0].data else null
+        vastAdObj.duration = if node.querySelector('Creative Duration').innerHTML then node.querySelector('Creative Duration').innerHTML else null
         vastAdObj.customViewTracker = if node.querySelector('#secondaryAdServer') then node.querySelector('#secondaryAdServer').childNodes[0].data else null
 
         for tracker in eventMap
@@ -102,7 +112,6 @@ class @SimpleVast
       catch error
         console.error "#{name}: parser crashed!" if options.dbg
         console.log error
-
 
     openxParser = (node) ->
       console.log "#{name}: try parse openxParser node" if options.dbg

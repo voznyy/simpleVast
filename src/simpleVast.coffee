@@ -55,6 +55,7 @@ class @SimpleVast
       console.log "#{name}: search parser for #{tag.provider}" if options.dbg
       switch tag.provider.toLowerCase()
         when 'adfox' then parser = adfoxParser
+        when 'openx' then parser = openxParser
         else console.log "#{name}: unknown parser for #{tag.provider}" if options.dbg
 
       parsedObj = parser node
@@ -71,6 +72,35 @@ class @SimpleVast
 
 #      Parsers
 #    ******************
+
+    openxParser = (node) ->
+      console.log "#{name}: try parse openxParser node" if options.dbg
+
+      try
+        if !node.querySelector('Ad')
+          console.log "#{name}: VAST response is empty" if options.dbg
+          return false
+
+        trackingEvents = node.querySelector('TrackingEvents')
+
+        vastAdObj.adTitle = node.querySelector('AdTitle').childNodes[0].data
+        vastAdObj.impression = node.querySelector('#primaryAdServer').childNodes[0].data
+        vastAdObj.videoUrl = node.querySelector('MediaFile>URL').childNodes[0].data
+        vastAdObj.duration = node.querySelector('Video>Duration').innerHTML
+        vastAdObj.customViewTracker = if node.querySelector('#secondaryAdServer') then node.querySelector('#secondaryAdServer').childNodes[0].data else null
+
+        for tracker in eventMap
+          tmpEvent = trackingEvents.querySelector("[event='" + tracker + "']")
+
+          if tmpEvent and tmpEvent.querySelector
+            vastAdObj.trackers[tracker] = [tmpEvent.querySelector('URL').childNodes[0].data]
+            if eventMap[tracker] is 'start' and vastAdObj.customViewTracker
+              vastAdObj.trackers[tracker].push(vastAdObj.customViewTracker)
+
+        vastAdObj
+
+      catch error
+        console.log "#{name}: parser crashed!" if options.dbg
 
     adfoxParser = (node) ->
       console.log "#{name}: try parse adfoxXML node" if options.dbg

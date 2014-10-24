@@ -2,7 +2,7 @@
 (function() {
   this.SimpleVast = (function() {
     function SimpleVast(options) {
-      var adfoxParser, eventMap, get, getNextTag, getTagData, name, parseTag, tryCount, vastAdObj, _self;
+      var adfoxParser, eventMap, get, getNextTag, getTagData, name, openxParser, parseTag, tryCount, vastAdObj, _self;
       name = 'simple VAST';
       if (!options) {
         console.log("" + name + " options undefined!");
@@ -61,6 +61,9 @@
           case 'adfox':
             parser = adfoxParser;
             break;
+          case 'openx':
+            parser = openxParser;
+            break;
           default:
             if (options.dbg) {
               console.log("" + name + ": unknown parser for " + tag.provider);
@@ -81,6 +84,42 @@
             console.log("" + name + ": no more tags");
           }
           return false;
+        }
+      };
+      openxParser = function(node) {
+        var error, tmpEvent, tracker, trackingEvents, _i, _len;
+        if (options.dbg) {
+          console.log("" + name + ": try parse openxParser node");
+        }
+        try {
+          if (!node.querySelector('Ad')) {
+            if (options.dbg) {
+              console.log("" + name + ": VAST response is empty");
+            }
+            return false;
+          }
+          trackingEvents = node.querySelector('TrackingEvents');
+          vastAdObj.adTitle = node.querySelector('AdTitle').childNodes[0].data;
+          vastAdObj.impression = node.querySelector('#primaryAdServer').childNodes[0].data;
+          vastAdObj.videoUrl = node.querySelector('MediaFile>URL').childNodes[0].data;
+          vastAdObj.duration = node.querySelector('Video>Duration').innerHTML;
+          vastAdObj.customViewTracker = node.querySelector('#secondaryAdServer') ? node.querySelector('#secondaryAdServer').childNodes[0].data : null;
+          for (_i = 0, _len = eventMap.length; _i < _len; _i++) {
+            tracker = eventMap[_i];
+            tmpEvent = trackingEvents.querySelector("[event='" + tracker + "']");
+            if (tmpEvent && tmpEvent.querySelector) {
+              vastAdObj.trackers[tracker] = [tmpEvent.querySelector('URL').childNodes[0].data];
+              if (eventMap[tracker] === 'start' && vastAdObj.customViewTracker) {
+                vastAdObj.trackers[tracker].push(vastAdObj.customViewTracker);
+              }
+            }
+          }
+          return vastAdObj;
+        } catch (_error) {
+          error = _error;
+          if (options.dbg) {
+            return console.log("" + name + ": parser crashed!");
+          }
         }
       };
       adfoxParser = function(node) {

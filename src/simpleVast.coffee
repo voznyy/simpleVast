@@ -56,6 +56,7 @@ class @SimpleVast
       switch tag.provider.toLowerCase()
         when 'adfox' then parser = adfoxParser
         when 'openx' then parser = openxParser
+        when 'dfp' then parser = dfpParser
         else console.log "#{name}: unknown parser for #{tag.provider}" if options.dbg
 
       parsedObj = parser node
@@ -72,6 +73,36 @@ class @SimpleVast
 
 #      Parsers
 #    ******************
+    dfpParser = (node) ->
+      console.log "#{name}: try parse dfpParser node" if options.dbg
+
+      try
+        if !node.querySelector('Ad')
+          console.log "#{name}: VAST response is empty" if options.dbg
+          return false
+
+        trackingEvents = node.querySelector('TrackingEvents')
+
+        vastAdObj.adTitle = node.querySelector('AdTitle').childNodes[0].data
+        vastAdObj.impression = node.querySelector('Impression').childNodes[0].data
+        vastAdObj.videoUrl = node.querySelector('MediaFiles>MediaFile').childNodes[0].data
+        vastAdObj.duration = node.querySelector('Creative Duration').innerHTML
+        vastAdObj.customViewTracker = if node.querySelector('#secondaryAdServer') then node.querySelector('#secondaryAdServer').childNodes[0].data else null
+
+        for tracker in eventMap
+          tmpEvent = trackingEvents.querySelectorAll("[event='" + tracker + "']")
+
+          for event in tmpEvent
+            if !vastAdObj.trackers[tracker]
+              vastAdObj.trackers[tracker] = []
+            vastAdObj.trackers[tracker].push(event.childNodes[0].data)
+
+        vastAdObj
+
+      catch error
+        console.error "#{name}: parser crashed!" if options.dbg
+        console.log error
+
 
     openxParser = (node) ->
       console.log "#{name}: try parse openxParser node" if options.dbg
@@ -100,7 +131,7 @@ class @SimpleVast
         vastAdObj
 
       catch error
-        console.log "#{name}: parser crashed!" if options.dbg
+        console.error "#{name}: parser crashed!" if options.dbg
 
     adfoxParser = (node) ->
       console.log "#{name}: try parse adfoxXML node" if options.dbg
@@ -129,7 +160,7 @@ class @SimpleVast
         vastAdObj
 
       catch error
-        console.log "#{name}: parser crashed!" if options.dbg
+        console.error "#{name}: parser crashed!" if options.dbg
 
     #      Commons
 #    ******************

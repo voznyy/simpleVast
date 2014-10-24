@@ -1,6 +1,8 @@
 {
   "name": "simple_VAST",
   "version": "0.1.0",
+  "name": "Andrew Voznyy",
+  "email": "q123enter@gmail.com",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-coffee": "^0.12.0",

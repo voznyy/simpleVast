@@ -21,6 +21,7 @@ class @SimpleVast
       videoUrl: '',
       duration: null,
       customViewTracker: null,
+      clickUrl: null,
       trackers: []
 
     eventMap = ['firstQuartile', 'midpoint', 'thirdQuartile', 'complete', 'mute', 'unmute', 'rewind', 'pause', 'resume', 'fullscreen', 'creativeView', 'acceptInvitation', 'start', 'complete']
@@ -98,6 +99,7 @@ class @SimpleVast
         vastAdObj.videoUrl = if node.querySelector('MediaFiles>MediaFile').childNodes[0] then node.querySelector('MediaFiles>MediaFile').childNodes[0].data else null
         vastAdObj.duration = if node.querySelector('Creative Duration').innerHTML then node.querySelector('Creative Duration').innerHTML else null
         vastAdObj.customViewTracker = if node.querySelector('#secondaryAdServer') then node.querySelector('#secondaryAdServer').childNodes[0].data else null
+        vastAdObj.clickUrl = if node.querySelector('VideoClicks ClickThrough') then node.querySelector('VideoClicks ClickThrough').childNodes[0].data else null
 
         for tracker in eventMap
           tmpEvent = trackingEvents.querySelectorAll("[event='" + tracker + "']")

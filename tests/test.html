@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>simlte vast</title>
-    <script src="../src/simpleVast.js"></script>
+    <script src="../simplevast.min.js"></script>
 </head>
 <body>
 
@@ -11,14 +11,11 @@
     var adv = new SimpleVast({
         dbg: true,
         vastTags: [{
-            url: 'http://91.220.161.210/public/xml/adfoxSmarts.xml',
+            url: 'http://ads.adfox.ru/175105/getCode?p1=blujh&p2=emxn&pfc=a&pfb=a&plp=a&pli=a&pop=a&puid1=&puid2=&puid3=&puid22=&puid27=&puid51=&puid52=',
             provider: 'adfox'
         }, {
             url: 'http://adv.lux.fm/www/delivery/fc.php?script=bannerTypeHtml:vastInlineBannerTypeHtml:vastInlineHtml&zones=pre-roll:0.0-0%3D28&nz=1&source=&r=R0.8214839450083673&block=0&format=vast&charset=UTF-8',
             provider: 'openx'
-        }, {
-            url: 'http://91.220.161.210/public/xml/fc.xml',
-            provider: 'openxs'
         }, {
             url: 'http://pubads.g.doubleclick.net/gampad/ads?sz=1080x720&iu=/133722552/SmartTV_24tv_preroll&ciu_szs&impl=s&gdfp_req=1&env=vp&output=xml_vast2&unviewed_position_start=1&url=[referrer_url]&description_url=[description_url]&correlator=[timestamp]',
             provider: 'dfp'
@@ -28,6 +25,11 @@
     adv.getAd(function(data) {
         console.log(data);
     });
+
+    adv.getAd(function(data) {
+        console.log(2, data);
+    });
+
 </script>
 
 </body>

@@ -18,6 +18,7 @@
         videoUrl: '',
         duration: null,
         customViewTracker: null,
+        clickUrl: null,
         trackers: []
       };
       eventMap = ['firstQuartile', 'midpoint', 'thirdQuartile', 'complete', 'mute', 'unmute', 'rewind', 'pause', 'resume', 'fullscreen', 'creativeView', 'acceptInvitation', 'start', 'complete'];
@@ -117,6 +118,7 @@
           vastAdObj.videoUrl = node.querySelector('MediaFiles>MediaFile').childNodes[0] ? node.querySelector('MediaFiles>MediaFile').childNodes[0].data : null;
           vastAdObj.duration = node.querySelector('Creative Duration').innerHTML ? node.querySelector('Creative Duration').innerHTML : null;
           vastAdObj.customViewTracker = node.querySelector('#secondaryAdServer') ? node.querySelector('#secondaryAdServer').childNodes[0].data : null;
+          vastAdObj.clickUrl = node.querySelector('VideoClicks ClickThrough') ? node.querySelector('VideoClicks ClickThrough').childNodes[0].data : null;
           for (_i = 0, _len = eventMap.length; _i < _len; _i++) {
             tracker = eventMap[_i];
             tmpEvent = trackingEvents.querySelectorAll("[event='" + tracker + "']");

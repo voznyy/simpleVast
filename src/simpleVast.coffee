@@ -18,7 +18,8 @@ class @SimpleVast
     vastAdObj =
       adTitle: null,
       impression: null,
-      videoUrl: '',
+      videoUrl: null,
+      clickUrl: null
       duration: null,
       customViewTracker: null,
       clickUrl: null,
@@ -85,9 +86,11 @@ class @SimpleVast
       vastAdObj =
         adTitle: null,
         impression: null,
-        videoUrl: '',
+        videoUrl: null,
+        clickUrl: null
         duration: null,
         customViewTracker: null,
+        clickUrl: null,
         trackers: []
 
 #      Parsers
@@ -133,6 +136,7 @@ class @SimpleVast
 
         trackingEvents = node.querySelector('TrackingEvents')
 
+        vastAdObj.clickUrl = if node.querySelector('ClickThrough URL') then node.querySelector('ClickThrough URL').childNodes[0].data else null
         vastAdObj.adTitle = node.querySelector('AdTitle').childNodes[0].data
         vastAdObj.impression = node.querySelector('#primaryAdServer').childNodes[0].data
         vastAdObj.videoUrl = node.querySelector('MediaFile>URL').childNodes[0].data
@@ -160,15 +164,14 @@ class @SimpleVast
           console.log "#{name}: VAST response is empty" if options.dbg
           return false
 
-        console.log node
-
         trackingEvents = node.querySelector('TrackingEvents')
 
         vastAdObj.adTitle = if node.querySelector('AdTitle').childNodes[0] then node.querySelector('AdTitle').childNodes[0] else 'no title'
         vastAdObj.impression = node.querySelector('Impression').childNodes[0].data
-        vastAdObj.videoUrl = node.querySelector('MediaFiles MediaFile').childNodes[0].data
+        vastAdObj.videoUrl = node.querySelector('MediaFiles MediaFile').childNodes[1].data
         vastAdObj.duration = node.querySelector('Duration').innerHTML
         vastAdObj.customViewTracker = if node.querySelector('#secondaryAdServer') then node.querySelector('#secondaryAdServer').childNodes[0].data else null
+        vastAdObj.clickUrl = if node.querySelector('VideoClicks ClickThrough') then node.querySelector('VideoClicks ClickThrough').childNodes[0].data else null
 
         for tracker in eventMap
           tmpEventList = trackingEvents.querySelectorAll("[event='" + tracker + "']")

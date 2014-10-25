@@ -15,7 +15,8 @@
       vastAdObj = {
         adTitle: null,
         impression: null,
-        videoUrl: '',
+        videoUrl: null,
+        clickUrl: null,
         duration: null,
         customViewTracker: null,
         clickUrl: null,
@@ -109,9 +110,11 @@
         return vastAdObj = {
           adTitle: null,
           impression: null,
-          videoUrl: '',
+          videoUrl: null,
+          clickUrl: null,
           duration: null,
           customViewTracker: null,
+          clickUrl: null,
           trackers: []
         };
       };
@@ -167,6 +170,7 @@
             return false;
           }
           trackingEvents = node.querySelector('TrackingEvents');
+          vastAdObj.clickUrl = node.querySelector('ClickThrough URL') ? node.querySelector('ClickThrough URL').childNodes[0].data : null;
           vastAdObj.adTitle = node.querySelector('AdTitle').childNodes[0].data;
           vastAdObj.impression = node.querySelector('#primaryAdServer').childNodes[0].data;
           vastAdObj.videoUrl = node.querySelector('MediaFile>URL').childNodes[0].data;
@@ -202,13 +206,13 @@
             }
             return false;
           }
-          console.log(node);
           trackingEvents = node.querySelector('TrackingEvents');
           vastAdObj.adTitle = node.querySelector('AdTitle').childNodes[0] ? node.querySelector('AdTitle').childNodes[0] : 'no title';
           vastAdObj.impression = node.querySelector('Impression').childNodes[0].data;
-          vastAdObj.videoUrl = node.querySelector('MediaFiles MediaFile').childNodes[0].data;
+          vastAdObj.videoUrl = node.querySelector('MediaFiles MediaFile').childNodes[1].data;
           vastAdObj.duration = node.querySelector('Duration').innerHTML;
           vastAdObj.customViewTracker = node.querySelector('#secondaryAdServer') ? node.querySelector('#secondaryAdServer').childNodes[0].data : null;
+          vastAdObj.clickUrl = node.querySelector('VideoClicks ClickThrough') ? node.querySelector('VideoClicks ClickThrough').childNodes[0].data : null;
           for (_i = 0, _len = eventMap.length; _i < _len; _i++) {
             tracker = eventMap[_i];
             tmpEventList = trackingEvents.querySelectorAll("[event='" + tracker + "']");

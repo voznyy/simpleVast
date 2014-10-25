@@ -185,6 +185,7 @@ class @SimpleVast
 #    ******************
     get = (url, callback) ->
       xhr = new XMLHttpRequest()
+      xhr.withCredentials = true
       xhr.open 'GET', url, true
       xhr.onreadystatechange = ->
         if xhr.readyState is 4

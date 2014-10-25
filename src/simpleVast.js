@@ -202,10 +202,11 @@
             }
             return false;
           }
+          console.log(node);
           trackingEvents = node.querySelector('TrackingEvents');
           vastAdObj.adTitle = node.querySelector('AdTitle').childNodes[0] ? node.querySelector('AdTitle').childNodes[0] : 'no title';
           vastAdObj.impression = node.querySelector('Impression').childNodes[0].data;
-          vastAdObj.videoUrl = node.querySelector('MediaFile').childNodes[0].data;
+          vastAdObj.videoUrl = node.querySelector('MediaFiles MediaFile').childNodes[0].data;
           vastAdObj.duration = node.querySelector('Duration').innerHTML;
           vastAdObj.customViewTracker = node.querySelector('#secondaryAdServer') ? node.querySelector('#secondaryAdServer').childNodes[0].data : null;
           for (_i = 0, _len = eventMap.length; _i < _len; _i++) {

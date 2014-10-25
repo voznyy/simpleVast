@@ -160,11 +160,13 @@ class @SimpleVast
           console.log "#{name}: VAST response is empty" if options.dbg
           return false
 
+        console.log node
+
         trackingEvents = node.querySelector('TrackingEvents')
 
         vastAdObj.adTitle = if node.querySelector('AdTitle').childNodes[0] then node.querySelector('AdTitle').childNodes[0] else 'no title'
         vastAdObj.impression = node.querySelector('Impression').childNodes[0].data
-        vastAdObj.videoUrl = node.querySelector('MediaFile').childNodes[0].data
+        vastAdObj.videoUrl = node.querySelector('MediaFiles MediaFile').childNodes[0].data
         vastAdObj.duration = node.querySelector('Duration').innerHTML
         vastAdObj.customViewTracker = if node.querySelector('#secondaryAdServer') then node.querySelector('#secondaryAdServer').childNodes[0].data else null
 

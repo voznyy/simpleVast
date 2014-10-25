@@ -20,11 +20,23 @@ module.exports = function(grunt) {
                     'src/simpleVast.js': ['src/simpleVast.coffee']
                 }
             }
+        },
+
+        watch: {
+            autobuild: {
+                files: ['src/simpleVast.coffee'],
+                tasks: ['coffee', 'uglify'],
+                options: {
+                    spawn: false
+                }
+            }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-coffee');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.registerTask('default', ['coffee', 'uglify']);
 

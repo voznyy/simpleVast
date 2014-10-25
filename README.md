@@ -1,8 +1,8 @@
-# install grunt and dep
-npm install
+### install grunt and dep
+<code>npm install<code>
 
-# build project
-grunt
+### build project
+<code>grunt<code>
 
-# auto build project (watching changes in src/simpleVast.coffee)
-grunt watch
+### auto build project (watching changes in src/simpleVast.coffee)
+<code>grunt watch<code>

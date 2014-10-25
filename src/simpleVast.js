@@ -1,7 +1,7 @@
 (function() {
   this.SimpleVast = (function() {
     function SimpleVast(options) {
-      var adfoxParser, dfpParser, eventMap, get, getNextTag, getTagData, name, openxParser, parseTag, resetVastObject, tryCount, vastAdObj, _self;
+      var adfoxParser, dfpParser, eventMap, get, getNextTag, getTagData, name, openxParser, parseTag, pixelTrack, resetVastObject, tryCount, vastAdObj, _self;
       name = 'simple VAST';
       if (!options) {
         console.log("" + name + " options undefined!");
@@ -26,6 +26,21 @@
         _self.completeCallback = callback;
         resetVastObject();
         return getTagData();
+      };
+      this.trackEvent = function(eventName) {
+        var e, event, _i, _len, _results;
+        event = vastAdObj.trackers[eventName];
+        if (event && event.length) {
+          _results = [];
+          for (_i = 0, _len = event.length; _i < _len; _i++) {
+            e = event[_i];
+            if (options.dbg) {
+              console.log("" + name + ": track " + eventName + " url: " + e);
+            }
+            _results.push(pixelTrack(e, ''));
+          }
+          return _results;
+        }
       };
       getTagData = function() {
         var tag;
@@ -238,6 +253,11 @@
           }
         };
         return xhr.send();
+      };
+      pixelTrack = function(url, data) {
+        var img;
+        img = new Image();
+        return img.src = url + data + '&rand=' + (new Date().getTime());
       };
     }
 

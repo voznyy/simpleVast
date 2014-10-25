@@ -33,6 +33,14 @@ class @SimpleVast
       resetVastObject()
       getTagData()
 
+    @trackEvent = (eventName) ->
+      event = vastAdObj.trackers[eventName]
+
+      if event and event.length
+        for e in event
+          console.log "#{name}: track #{eventName} url: #{e}" if options.dbg
+          pixelTrack e, ''
+
 
 #    Utils
 #    ******************
@@ -190,3 +198,7 @@ class @SimpleVast
               console.log("#{name}: unknown response") if options.dbg
               callback(null)
       xhr.send()
+
+    pixelTrack = (url, data) ->
+      img = new Image()
+      img.src = url + data + '&rand=' + (new Date().getTime());

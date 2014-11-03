@@ -43,6 +43,9 @@
           return _results;
         }
       };
+      this.trackUrl = function(url) {
+        return pixelTrack(url, '');
+      };
       getTagData = function() {
         var tag;
         tag = getNextTag();

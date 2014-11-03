@@ -42,6 +42,8 @@ class @SimpleVast
           console.log "#{name}: track #{eventName} url: #{e}" if options.dbg
           pixelTrack e, ''
 
+    @trackUrl = (url) ->
+      pixelTrack url, ''
 
 #    Utils
 #    ******************
